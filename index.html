@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="worm.js"></script>
+    <style>
+        .red{
+            color:red;
+        }
+        .worm{
+            color:blue;
+        }
+
+    </style>
+</head>
+<body>
+
+        <input :model="worm" type="text">
+        <input :model="ccc" type="text">
+        <input :model="ccc" type="text">
+        {{ccc}}
+        <div w-html="ccc"></div>
+        <div :class="worm==ttt && worm == worm?color:'  worm  'fwfaw">如果值1和值2一样我就变红色{{worm + ttt}}</div>
+        <input :model="ttt" type="text">
+        <input :value="ttt" type="text">
+        <br>
+        我是html：<span :html="ttt"></span>
+        <div>我是字符串2：{{ttt}}</div>
+        ||{{worm==ttt?color:"blue"}}||
+        ||a{{worm}}||
+        ||b{{ttt}}cc||
+        <div w-for="item,data">
+            <div w-for="item,data">
+                123456
+            </div>
+        </div>
+
+</body>
+<script>
+var Worm = new Worm({
+   data:{
+       data:{a:"bb",b:"bb",c:[0,1,2]},
+       worm:'ttt',
+       ttt: '',
+       ccc: '            ',
+       color:'red'
+   },
+   onload:function(){
+        //IE下删除console否则不执行
+        //console.log('载入完成');
+   },
+   update:function(e){
+        //IE下删除console否则不执行
+        //console.log('数据更新了',e);
+   }
+});
+
+console.log(Worm);
+setInterval(function(){
+    //Worm.ttt = '我市变动的值'
+}, 1000);
+</script>
+</html>
