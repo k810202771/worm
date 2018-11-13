@@ -17,13 +17,12 @@
     </style>
 </head>
 <body>
-
         <input :model="worm" type="text">
         <input :model="ccc" type="text">
         <input :model="ccc" type="text">
         {{ccc}}
         <div w-html="ccc"></div>
-        <div :class="worm==ttt && worm == worm?color:'  worm  'fwfaw">如果值1和值2一样我就变红色{{worm + ttt}}</div>
+        <div :class="worm==ttt ?color:'this.worm'">如果值1和值2一样我就变红色{{worm + ttt}}</div>
         <input :model="ttt" type="text">
         <input :value="ttt" type="text">
         <br>
@@ -37,16 +36,20 @@
                 123456
             </div>
         </div>
-
+        <input w-model="zpl" type="text">
+        <DIV :html="zpl"></DIV>
+        {{zpl}}
 </body>
 <script>
+
 var Worm = new Worm({
    data:{
        data:{a:"bb",b:"bb",c:[0,1,2]},
-       worm:'ttt',
-       ttt: '',
+       worm:"1",
+       ttt: "",
        ccc: '            ',
-       color:'red'
+       color:'red',
+       zpl:'我是赵培兰'
    },
    onload:function(){
         //IE下删除console否则不执行

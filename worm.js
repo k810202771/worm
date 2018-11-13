@@ -21,13 +21,14 @@ Worm.prototype = {
 		var that = this;
 		//getinitialvalue
 		function getinitialvalue(str){
-			console.log("开始：",str);
+			console.log("开始：",str)
 			for(z in that.$data){
-				console.log(z,str.match(eval("/[^\'](."+z+"?)[^\']/g")));
-				//str = str.replace(eval("/[^\'](."+z+"?)[^\']/g"),"this." + z);
+				str = str.replace(eval("/("+z+")(?=(?:[^\"]|\"[^\"]*\")*$)(?=(?:[^\']|\'[^\']*\')*$)/g"),"this." + z);
 			}
+			console.log("结束：",str);
 			return str;
 		}
+		
 		//getkey
 		function getkey(key){
 			var bs = key.substr(0,1),keys = {$html:"innerHTML",$class:"className"};
@@ -112,7 +113,7 @@ Worm.prototype = {
 			//判断是否不执行
 			if(this._datas[i].lastvalue == this.$value){
 				if(this._datas[i].key == "model" && this._datas[i].el.value != this.$value){
-					eval(this._datas[i].initialvalue) = this._datas[i].el.value;
+					eval(this._datas[i].initialvalue + "= this._datas[i].el.value");
 					this._datas[i].lastvalue = this._datas[i].el.value;
 				}
 			}else{
