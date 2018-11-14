@@ -22,7 +22,7 @@
         <input :model="ccc" type="text">
         {{ccc}}
         <div w-html="ccc"></div>
-        <div :class="worm==ttt ?color:'this.worm'">如果值1和值2一样我就变红色{{worm + ttt}}</div>
+        <div :class='worm==ttt ?color:"worm"'>如果值1和值2一样我就变红色{{worm + ttt}}</div>
         <input :model="ttt" type="text">
         <input :value="ttt" type="text">
         <br>
@@ -31,16 +31,15 @@
         ||{{worm==ttt?color:"blue"}}||
         ||a{{worm}}||
         ||b{{ttt}}cc||
-        <div w-for="item,data">
-            <div w-for="item,data">
+        <div :class="color" w-for="  item in data  ">
+            <div w-for="item,aaa in item">
                 123456
             </div>
         </div>
-        <input w-model="zpl" type="text">
-        <DIV :html="zpl"></DIV>
-        {{zpl}}
+        111233
 </body>
 <script>
+
 
 var Worm = new Worm({
    data:{
@@ -48,8 +47,7 @@ var Worm = new Worm({
        worm:"1",
        ttt: "",
        ccc: '            ',
-       color:'red',
-       zpl:'我是赵培兰ha'
+       color:'red'
    },
    onload:function(){
         //IE下删除console否则不执行
@@ -63,7 +61,7 @@ var Worm = new Worm({
 
 console.log(Worm);
 setInterval(function(){
-    //Worm.ttt = '我市变动的值'
+    Worm.ccc = new Date();
 }, 1000);
 </script>
 </html>
