@@ -1,6 +1,89 @@
-﻿var Worm = function(options){
+﻿	//insert For
+	insertfor = function(el,data,that){
+		var element = el.children;
+		for(i = 0;i< element.length;i++){
+
+			if(element[i].attributes && element[i].attributes.length > 0){
+				var attrs = element[i].attributes;  //得到所有属性
+				for(var t=0;t<attrs.length;t++){
+					var bs = attrs[t].name.substr(0,2);
+					if(bs == "w-" || bs.substr(0,1) == ":"){
+						var key = that.$getkey(attrs[t].name);
+						if(key == "for"){
+	
+							var key = that.$getkey(attrs[t].name),
+							expression = attrs[t].value.replace(/(^\s*)|(\s*$)/g,"").replace("  "," ").split(" "),
+							parameter = expression[0].replace(" ","").split(","),
+							parent = element[i].parentNode,
+							index = 0,
+							lastel = element[i],
+							originaldata = element[i].innerHTML,
+							fordata = {
+								item:parameter[0],
+								index:parameter.length>1?parameter[1]:null,
+								type:expression[1]
+							};
+					
+							try{
+								value = eval(expression[2]);
+								if(!value){
+									thorw;
+								}
+							}catch(to){
+								value = eval("that." + expression[2]);
+								if(!value){
+									value = expression[2];
+								}
+							}
+							
+							var elementData = {
+								initialvalue: data || value,
+								fordata:fordata,
+								key:key,
+								value:element[i],
+								parentNode:parent,
+								lastvalue:null
+							}
+
+							that._fors.push(elementData);
+							element[i].removeAttribute(attrs[t].name);
+
+							for(f in elementData.initialvalue){
+								console.log(value[f],data,elementData.initialvalue);
+								if(index > 0){
+									lastel = lastel.nextSibling;
+									var elementBODY = elementData.value.cloneNode();
+									elementBODY.innerHTML = originaldata;
+									parent.insertBefore(elementBODY,lastel)
+									lastel = elementBODY;
+								}else{
+									var elementBODY = elementData.value;
+								}
+
+								elementBODY.innerHTML = elementBODY.innerHTML.replace(/\{\{+(.+?)\}\}/g,"@@~"+elementData.initialvalue[f]+"@@~");
+
+								//console.log(elementBODY.innerHTML,value[f] + "/" + elementData.fordata.item);
+								index++
+								new insertfor(elementBODY,elementData.initialvalue[f],that);
+							}
+
+						}
+					}
+				}
+			}
+
+		}
+
+	}
+
+
+var Worm = function(options){
 	//初始化this
 	for(var i in options.data){
+		if(i.substr(0,1) == "$" || i.substr(0,1) == "_"){
+			console.error("[Worm] Error 变量 \"" + i + "\" 错误,Date中初始化的变量不能以 $ 和 _ 开头！");
+			return false;
+		}
 		this[i] = options.data[i];
 	}
 	this.$Initialization(options);
@@ -9,10 +92,11 @@
 Worm.prototype = {
 	_datas:[],
 	_fors:[],
+	$time:10,
 	$backstage:true,
 	$transference:document.createElement("w-worm"),
-	onload:function(){},
-	update:function(){},
+	onload:null,
+	update:null,
 	//getkey
 	$getkey:function(key){
 		var bs = key.substr(0,1),keys = {$html:"innerHTML",$class:"className"};
@@ -33,30 +117,6 @@ Worm.prototype = {
 		}
 		return str;
 	},
-	//insert For
-	$insertfor:function(el,value,key,name){
-		var expression = value.replace(/(^\s*)|(\s*$)/g,"").replace("  "," ").split(" ");
-		var parameter = expression[0].replace(" ","").split(",");
-		
-		var fordata = {
-			item:parameter[0],
-			index:parameter.length>1?parameter[1]:null,
-			type:expression[1]
-		};
-
-		var $transference = this.$transference.cloneNode();
-		this._fors.push({
-			initialvalue: this.$getinitialvalue(expression[2]),
-			fordata:fordata,
-			key:key,
-			el:$transference,
-			value:el,
-			lastvalue:null
-		});
-		var parentNode = el.parentNode;
-		el.removeAttribute(name);
-		parentNode.replaceChild($transference,el);
-	},
 	$Initialization:function(options){
 		this.$el = this.el || document.body;
 		this.$data = options.data || {};
@@ -64,6 +124,9 @@ Worm.prototype = {
 		//删除多余的变量
 		delete options.data;
 		var that = this;
+
+		//渲染for
+		new insertfor(this.$el,null,this);
 
 		//html初始化
 		//初始化动态数据
@@ -81,20 +144,19 @@ Worm.prototype = {
 			});
 		}
 		//属性值初始化
-		var element = document.getElementsByTagName("*");
+		element = document.getElementsByTagName("*");
 		for(i = 0;i< element.length;i++){
 			if(element[i].attributes && element[i].attributes.length > 0){
-				var attrs = element[i].attributes;  //得到所有属性
-				for(var t=0;t<attrs.length;t++){
-					var bs = attrs[t].name.substr(0,2);
+				attrs = element[i].attributes;  //得到所有属性
+				for(t=0;t<attrs.length;t++){
+					bs = attrs[t].name.substr(0,2);
 					if(bs == "w-" || bs.substr(0,1) == ":"){
-						var key = this.$getkey(attrs[t].name);
+						key = this.$getkey(attrs[t].name);
 						switch(key){
 						case "for":
-							this.$insertfor(element[i],attrs[t].value,key,attrs[t].name);
 							break;
 						default:
-							if(!attrs.getNamedItem('w-for') && !attrs.getNamedItem(':for')){
+							if(!attrs.getNamedItem("w-for") && !attrs.getNamedItem(":for")){
 								attrs[t].value = this.$getinitialvalue(attrs[t].value);
 								this._datas.push({
 									initialvalue: attrs[t].value,
@@ -110,7 +172,8 @@ Worm.prototype = {
 					}
 				}
 			}
-		}	
+		}
+
 		//初始化完成后更新一次数据
 		this.$refresh();
 
@@ -118,76 +181,59 @@ Worm.prototype = {
 			//窗口进入刷新
 			window.addEventListener("focus",function(){
 				that.$refresh();
-			})
+			});
 			//窗口退出暂停
 			window.addEventListener("blur",function(){
 				clearTimeout(that.$timer);
-			})
+			});
 		}
 
 		//初始化完成后
-		this.onload();
+		this.onload && this.onload();
 	},
 	//更新数据
 	$refresh:function(){
 		var that = this;
 		//渲染for类型
 		for(var i=0;i<this._fors.length;i++){
-			this.$value = eval(this._fors[i].initialvalue);
-			//判断是否不执行
-			if(this._fors[i].lastvalue != this.$value){
-				this.update(this._fors[i]);
-				console.log(this._fors[i]);
-				
-				var elements = this._fors[i].el.children;
-				console.log(elements);
-				while (elements.length) {
-					console.log(elements);
-				}
-				if(elements.attributes && elements.attributes.length > 0){
-					var attrs = elements.attributes;  //得到所有属性
-					for(var t=0;t<attrs.length;t++){
-						var bs = attrs[t].name.substr(0,2);
-						if(bs == "w-" || bs.substr(0,1) == ":"){
-							console.log(attrs);
-						}
+
+		}
+
+		//渲染元素属性
+		for(i=0;i<this._datas.length;i++){
+			if(this._datas[i].el.parentNode){
+
+				this.$value = eval(this._datas[i].initialvalue);
+				//判断是否不执行
+				if(this._datas[i].lastvalue == this.$value){
+					if(this._datas[i].key == "model" && this._datas[i].el.value != this.$value){
+						eval(this._datas[i].initialvalue + "= this._datas[i].el.value");
+						this._datas[i].lastvalue = this._datas[i].el.value;
+					}
+				}else{
+					this.update && this.update(this._datas[i]);
+					switch(this._datas[i].key){
+					case "model":
+						this._datas[i].lastvalue = this.$value;
+						this._datas[i].el.value = this.$value;
+						break;
+					default:
+						this._datas[i].el[this._datas[i].key] = this.$value;
+						this._datas[i].lastvalue = this.$value;
+						break;
 					}
 				}
-				
-				eval("for(item " + this._fors[i].fordata.type + ' this.$value){this._fors[i].el.appendChild(this._fors[i].value.cloneNode(true))}')
-				//this.$insertfor(element[i],attrs[t].value,key,attrs[t].name);
 
-				this._fors[i].lastvalue = this.$value;
-			}
-		}
-		//渲染元素属性
-		for(var i=0;i<this._datas.length;i++){
-			this.$value = eval(this._datas[i].initialvalue);
-			//判断是否不执行
-			if(this._datas[i].lastvalue == this.$value){
-				if(this._datas[i].key == "model" && this._datas[i].el.value != this.$value){
-					eval(this._datas[i].initialvalue + "= this._datas[i].el.value");
-					this._datas[i].lastvalue = this._datas[i].el.value;
-				}
 			}else{
-				this.update(this._datas[i]);
-				switch(this._datas[i].key){
-				case "model":
-					this._datas[i].lastvalue = this.$value;
-					this._datas[i].el.value = this.$value;
-					break;
-				default:
-					this._datas[i].el[this._datas[i].key] = this.$value;
-					this._datas[i].lastvalue = this.$value;
-					break;
-				}
+				this._datas.splice(i,1);
+				i--;
 			}
 		}
 		delete this.$value;
 
 		this.$timer = setTimeout(function(){
 			that.$refresh();
-		},10);
+		},this.$time);
 	},
 	//获取元素
 	$:function(str,ment){
