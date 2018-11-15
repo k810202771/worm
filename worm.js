@@ -37,7 +37,7 @@
 							}
 							
 							var elementData = {
-								initialvalue: data || value,
+								initialvalue: data != null?data:value,
 								fordata:fordata,
 								key:key,
 								value:element[i],
@@ -49,7 +49,7 @@
 							element[i].removeAttribute(attrs[t].name);
 
 							for(f in elementData.initialvalue){
-								console.log(value[f],data,elementData.initialvalue);
+								console.log(elementData.initialvalue[f],elementData.initialvalue);
 								if(index > 0){
 									lastel = lastel.nextSibling;
 									var elementBODY = elementData.value.cloneNode();
