@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <script src="worm.js"></script>
+    <script src="worm2.0.js"></script>
+
+    <script  language="Vbscript">
+        document.write("Hello from VBScript!")
+    </script>
     <style>
         .red{
             color:red;
@@ -29,29 +33,27 @@
         我是html：<span :html="ttt"></span>
         <div>我是字符串2：{{ttt}}</div>
         ||{{worm==ttt?color:"blue"}}||
-        ||a{{worm}}||
+        ||相加{{worm + ttt}}||
         ||b{{ttt}}cc||
         <div :class="color" w-for="  item in data  ">
-            {{item}}
             <div w-for="item,aaa in item">
-                {{item}}
-                <div w-for="item,aaa in item" :class="'worm'">
-                    777
+                <div w-for="item,aaa in item" :class='worm==ttt ?color:"worm"'>
+                    {!{item}}
                 </div>
             </div>
         </div>
         111233
 </body>
-<script>
+<script type="text/javascript">
+
 
 
 var worm = new Worm({
    data:{
-       data:{a:8,b:"bb",c:[0,1,2]},
-       worm:"1",
-       ttt: "",
-       ccc: '',
-       color:'red'
+       worm:"我是worm",
+       ttt: "我是ttt",
+       ccc: '我是ccc',
+       color:'我是red'
    },
    onload:function(){
         //IE下删除console否则不执行
@@ -63,9 +65,13 @@ var worm = new Worm({
    }
 });
 
-console.log(worm);
 setInterval(function(){
     worm.ccc = new Date();
 }, 1000);
+
+    worm.ttt = '《||1||》';
+    worm.worm = '《||1||》';
+
+
 </script>
 </html>

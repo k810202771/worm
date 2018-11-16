@@ -49,7 +49,7 @@
 							element[i].removeAttribute(attrs[t].name);
 
 							for(f in elementData.initialvalue){
-								console.log(elementData.initialvalue[f],elementData.initialvalue);
+								console.log(elementData.initialvalue[f],elementData);
 								if(index > 0){
 									lastel = lastel.nextSibling;
 									var elementBODY = elementData.value.cloneNode();
@@ -60,7 +60,8 @@
 									var elementBODY = elementData.value;
 								}
 
-								elementBODY.innerHTML = elementBODY.innerHTML.replace(/\{\{+(.+?)\}\}/g,"@@~"+elementData.initialvalue[f]+"@@~");
+								elementBODY.innerHTML = elementBODY.innerHTML.replace(eval("/\{\{+(.+?)\}\}/g"),"@@~$1@@~"+elementData.initialvalue[f]+"@@~");
+								//elementBODY.innerHTML = elementBODY.innerHTML.replace(eval("/\{\{+("+elementData.fordata.item+")\}\}/g"),"@@~$1@@~"+elementData.initialvalue[f]+"@@~");
 
 								//console.log(elementBODY.innerHTML,value[f] + "/" + elementData.fordata.item);
 								index++
@@ -92,7 +93,7 @@ var Worm = function(options){
 Worm.prototype = {
 	_datas:[],
 	_fors:[],
-	$time:10,
+	$time:100,
 	$backstage:true,
 	$transference:document.createElement("w-worm"),
 	onload:null,
@@ -126,7 +127,7 @@ Worm.prototype = {
 		var that = this;
 
 		//渲染for
-		new insertfor(this.$el,null,this);
+		//new insertfor(this.$el,null,this);
 
 		//html初始化
 		//初始化动态数据
